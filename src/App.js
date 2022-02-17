@@ -11,12 +11,7 @@ class App extends React.Component {
     super();
     this.state = {
       openDialog: false,
-      tasks: [{
-        title: 'title1',
-        description: 'description1',
-        date: '2019-01-01',
-        isChecked: false
-      }],
+      tasks: [],
       task: {
         title: '',
         description: '',
@@ -25,6 +20,17 @@ class App extends React.Component {
       }
     };
   }
+
+  componentDidMount() {
+    let url = 'tasks/'
+    let headers = new Headers();
+    return fetch(url, {
+      method: 'GET',
+      accept: 'application/json',
+      headers: headers
+    }).then(response => response.json())
+      .then(json => this.setState({ tasks: json.taskList }));
+  };
 
   taskCallback = value => {
     this.setState(() => ({
@@ -49,6 +55,23 @@ class App extends React.Component {
       tasks: prevState.tasks.concat(this.state.task)
     }));
     this.handleClose();
+
+    let url = 'task/'
+    let headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+
+    return fetch(url, {
+      method: 'POST',
+      accept: 'application/json',
+      headers: headers,
+      body: JSON.stringify(this.state.task)
+    }).then(response => response.json())
+      .then(json => this.setState({ task: json.task }))
+      .then(() => {
+        let updatedTasks = [...this.state.tasks]
+        updatedTasks[updatedTasks.length - 1] = this.state.task
+        this.setState(() => ({ tasks: updatedTasks }))
+      });
   };
 
   render() {

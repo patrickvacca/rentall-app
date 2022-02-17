@@ -20,7 +20,7 @@ class Dashboard extends React.Component {
     handleCheck = id => {
         this.setState({
             tasks: this.props.tasks.map(task => {
-                if (task.title === id) {
+                if (task.id === id) {
                     task.isChecked = !task.isChecked;
                 }
                 return task;
@@ -42,18 +42,39 @@ class Dashboard extends React.Component {
     };
 
     handleDelete = () => {
+        let taskIDDelete = 0
         for (var i = 0; i < this.props.tasks.length; i++) {
-            if (this.props.tasks[i].title === this.state.deleteIndex) {
+            if (this.props.tasks[i].id === this.state.deleteIndex) {
                 this.props.tasks.splice(i, 1);
+                taskIDDelete = this.state.deleteIndex
                 break;
             }
         }
         this.handleClose();
+
+        let url = `task/${taskIDDelete}/`
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+
+        return fetch(url, {
+            method: 'DELETE',
+            accept: 'application/json',
+            headers: headers
+        }).then(
+            response => console.log(response)
+            // success or error snackbar
+        );
+    };
+
+    generateKey = task => {
+        let generatedKey = task.id ? task.id : task.title;
+        task.id = generatedKey
+        return task.id
     };
 
     render() {
         const listItems = this.props.tasks.map(task =>
-            <Card key={`task-${task.title}`} sx={{ m: 1, p: 1 }}>
+            <Card key={`task-${this.generateKey(task)}`} sx={{ m: 1, p: 1 }}>
                 <ListItem>
                     <ListItemButton>
                         <ListItemIcon>
@@ -61,14 +82,14 @@ class Dashboard extends React.Component {
                                 edge="start"
                                 tabIndex={-1}
                                 disableRipple
-                                onChange={() => this.handleCheck(task.title)}
+                                onChange={() => this.handleCheck(task.id)}
                             />
                         </ListItemIcon>
                         <ListItemText style={{ textDecoration: task.isChecked ? 'line-through' : 'none' }} >
                             {task.title} - {task.description} | {task.date}
                         </ListItemText>
                     </ListItemButton>
-                    <ListItemButton onClick={() => this.handleDeleteIndex(task.title)} sx={{ px: 0 }}>
+                    <ListItemButton onClick={() => this.handleDeleteIndex(task.id)} sx={{ px: 0 }}>
                         <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>
                             <DeleteIcon color="error" />
                         </ListItemIcon>
