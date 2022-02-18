@@ -22,7 +22,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    let url = 'tasks/'
+    let url = 'https://rentall-challenge-service.herokuapp.com/tasks/'
     let headers = new Headers();
     return fetch(url, {
       method: 'GET',
@@ -56,7 +56,7 @@ class App extends React.Component {
     }));
     this.handleClose();
 
-    let url = 'task/'
+    let url = 'https://rentall-challenge-service.herokuapp.com/task/'
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
