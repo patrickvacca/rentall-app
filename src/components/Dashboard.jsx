@@ -52,7 +52,7 @@ class Dashboard extends React.Component {
         }
         this.handleClose();
 
-        let url = `https://rentall-challenge-service.herokuapp.com/task/${taskIDDelete}/`
+        let url = `${process.env.REACT_APP_BASE_URL}/task/${taskIDDelete}/`
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
