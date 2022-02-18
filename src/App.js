@@ -24,7 +24,7 @@ class App extends React.Component {
   componentDidMount() {
     let url = 'https://rentall-challenge-service.herokuapp.com/tasks/'
     let headers = new Headers();
-    headers.append('Access-Control-Allow-Origin', 'https://rentall-challenge-app.herokuapp.com');
+    headers.append('Access-Control-Allow-Origin', 'https://rentall-challenge-service.herokuapp.com/tasks/');
     headers.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     headers.append('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
     return fetch(url, {
