@@ -13,7 +13,7 @@ class Dashboard extends React.Component {
         this.state = {
             tasks: [],
             isDelete: false,
-            deleteIndex: 0
+            deleteIndexID: 0
         }
     };
 
@@ -34,23 +34,23 @@ class Dashboard extends React.Component {
         });
     };
 
-    handleDeleteIndex = id => {
+    handleDeleteIndexID = id => {
         this.setState({
-            deleteIndex: id,
+            deleteIndexID: id,
             isDelete: true
         });
     };
 
     handleDelete = () => {
         let taskIDDelete = 0
+        let taskIndex = 0
         for (var i = 0; i < this.props.tasks.length; i++) {
-            if (this.props.tasks[i].id === this.state.deleteIndex) {
-                this.props.tasks.splice(i, 1);
-                taskIDDelete = this.state.deleteIndex
+            if (this.props.tasks[i].id === this.state.deleteIndexID) {
+                taskIndex = i;
+                taskIDDelete = this.state.deleteIndexID;
                 break;
             }
         }
-        this.handleClose();
 
         let url = `${process.env.REACT_APP_BASE_URL}/task/${taskIDDelete}/`
         let headers = new Headers();
@@ -60,10 +60,17 @@ class Dashboard extends React.Component {
             method: 'DELETE',
             accept: 'application/json',
             headers: headers
-        }).then(
-            response => console.log(response)
-            // success or error snackbar
-        );
+        }).then(response => {
+            if (response.status === 204) {
+                this.props.tasks.splice(taskIndex, 1);
+                // success snackbar
+                this.handleClose();
+                console.log('success')
+            } else {
+                // error snackbar
+                console.log('error')
+            }
+        });
     };
 
     generateKey = task => {
@@ -89,7 +96,7 @@ class Dashboard extends React.Component {
                             {task.title} - {task.description} | {task.date}
                         </ListItemText>
                     </ListItemButton>
-                    <ListItemButton onClick={() => this.handleDeleteIndex(task.id)} sx={{ px: 0 }}>
+                    <ListItemButton onClick={() => this.handleDeleteIndexID(task.id)} sx={{ px: 0 }}>
                         <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>
                             <DeleteIcon color="error" />
                         </ListItemIcon>

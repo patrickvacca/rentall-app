@@ -51,10 +51,10 @@ class App extends React.Component {
   };
 
   handleSubmit = () => {
-    this.setState(prevState => ({
-      tasks: prevState.tasks.concat(this.state.task)
-    }));
-    this.handleClose();
+    // this.setState(prevState => ({
+    //   tasks: prevState.tasks.concat(this.state.task)
+    // }));
+    // this.handleClose();
 
     let url = `${process.env.REACT_APP_BASE_URL}/task/`;
     let headers = new Headers();
@@ -65,7 +65,18 @@ class App extends React.Component {
       accept: 'application/json',
       headers: headers,
       body: JSON.stringify(this.state.task)
-    }).then(response => response.json())
+    }).then(response => {
+      if (response.status === 201) {
+        this.setState(prevState => ({
+          tasks: prevState.tasks.concat(this.state.task)
+        }));
+        // success snackbar
+        this.handleClose();
+        return response.json()
+      } else {
+        // error snackbar
+      }
+    })
       .then(json => this.setState({ task: json.task }))
       .then(() => {
         let updatedTasks = [...this.state.tasks]
@@ -76,7 +87,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <Container disableGutters={true} sx={{ backgroundColor: '#282C34' }}>
+      <Container disableGutters={true} maxWidth='xl' sx={{ height: '100vh', backgroundColor: '#282C34' }}>
         <TaskBar openDialog={this.openDialog} dialogCallback={this.dialogCallback} />
         <Dialog
           open={this.state.openDialog}
@@ -92,22 +103,6 @@ class App extends React.Component {
           </DialogActions>
         </Dialog>
         <Dashboard tasks={this.state.tasks} />
-        <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <p>
-              Edit <code>src/App.js</code> and save to reload.
-            </p>
-            <a
-              className="App-link"
-              href="https://reactjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn React
-            </a>
-          </header>
-        </div>
       </Container >
     );
   }

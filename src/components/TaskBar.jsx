@@ -10,7 +10,7 @@ class TaskBar extends React.Component {
 
     render() {
         return (
-            <Container disableGutters={true}>
+            <Container disableGutters={true} maxWidth='xl'>
                 <AppBar position="static">
                     <Toolbar>
                         <IconButton
