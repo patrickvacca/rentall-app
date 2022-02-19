@@ -61,15 +61,23 @@ class Dashboard extends React.Component {
             accept: 'application/json',
             headers: headers
         }).then(response => {
+            let alert = {}
             if (response.status === 204) {
                 this.props.tasks.splice(taskIndex, 1);
-                // success snackbar
+                alert = {
+                    open: true,
+                    severity: 'success',
+                    message: 'Task successfully deleted!'
+                }
                 this.handleClose();
-                console.log('success')
             } else {
-                // error snackbar
-                console.log('error')
+                alert = {
+                    open: true,
+                    severity: 'error',
+                    message: 'Oops! Error deleting the task...'
+                }
             }
+            this.props.alertCallback(alert);
         });
     };
 
