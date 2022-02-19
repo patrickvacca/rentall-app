@@ -11,6 +11,10 @@ In the project directory, you can run:
 
 Installs the dependencies needed in order to run the app.
 
+## Create Environment Variables
+In the project directory, create a `.env.` file
+with the variable `REACT_APP_BASE_URL`.
+
 ## Available Scripts
 
 In the project directory, you can run:

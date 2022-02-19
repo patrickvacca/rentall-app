@@ -1,7 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
 import React from 'react';
-import { Button, Container, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Alert, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar } from '@mui/material';
 import Dashboard from './components/Dashboard';
 import Task from './components/Task';
 import TaskBar from './components/TaskBar';
@@ -11,6 +10,11 @@ class App extends React.Component {
     super();
     this.state = {
       openDialog: false,
+      alert: {
+        open: false,
+        severity: 'error',
+        message: ''
+      },
       tasks: [],
       task: {
         title: '',
@@ -22,7 +26,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    let url = 'tasks/'
+    let url = `${process.env.REACT_APP_BASE_URL}/tasks/`;
     let headers = new Headers();
     return fetch(url, {
       method: 'GET',
@@ -44,19 +48,38 @@ class App extends React.Component {
     }));
   };
 
-  handleClose = () => {
+  alertCallback = value => {
+    this.setState({
+      alert: value
+    });
+  };
+
+  handleDialogClose = () => {
     this.setState({
       openDialog: false
     });
   };
 
-  handleSubmit = () => {
+  handleAlertClose = () => {
     this.setState(prevState => ({
-      tasks: prevState.tasks.concat(this.state.task)
+      alert: {
+        ...prevState.alert,
+        open: false
+      }
     }));
-    this.handleClose();
+  };
 
-    let url = 'task/'
+  handleAlertOpen = () => {
+    this.setState(prevState => ({
+      alert: {
+        ...prevState.alert,
+        open: !prevState.alert.open,
+      }
+    }));
+  };
+
+  handleSubmit = () => {
+    let url = `${process.env.REACT_APP_BASE_URL}/task/`;
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
@@ -65,7 +88,31 @@ class App extends React.Component {
       accept: 'application/json',
       headers: headers,
       body: JSON.stringify(this.state.task)
-    }).then(response => response.json())
+    }).then(response => {
+      let responseData = { 'task': {} }
+      if (response.status === 201) {
+        this.setState(prevState => ({
+          tasks: prevState.tasks.concat(this.state.task),
+          alert: {
+            ...prevState.alert,
+            severity: 'success',
+            message: 'Task successfully created!'
+          }
+        }));
+        this.handleDialogClose();
+        responseData = response.json()
+      } else {
+        this.setState(prevState => ({
+          alert: {
+            ...prevState.alert,
+            severity: 'error',
+            message: 'Oops! Error creating the task...'
+          }
+        }));
+      }
+      this.handleAlertOpen()
+      return responseData
+    })
       .then(json => this.setState({ task: json.task }))
       .then(() => {
         let updatedTasks = [...this.state.tasks]
@@ -76,11 +123,22 @@ class App extends React.Component {
 
   render() {
     return (
-      <Container disableGutters={true} sx={{ backgroundColor: '#282C34' }}>
+      <Container disableGutters={true} maxWidth='xl' sx={{ height: '100vh', backgroundColor: '#282C34' }}>
         <TaskBar openDialog={this.openDialog} dialogCallback={this.dialogCallback} />
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={this.state.alert.open}
+          autoHideDuration={6000}
+          onClose={this.handleAlertClose}
+          sx={{ p: 4 }}
+        >
+          <Alert onClose={this.handleAlertClose} severity={this.state.alert.severity} sx={{ width: '100%' }}>
+            {this.state.alert.message}
+          </Alert>
+        </Snackbar>
         <Dialog
           open={this.state.openDialog}
-          onClose={this.handleClose}
+          onClose={this.handleDialogClose}
         >
           <DialogTitle>Create a Task</DialogTitle>
           <DialogContent>
@@ -88,26 +146,10 @@ class App extends React.Component {
           </DialogContent>
           <DialogActions>
             <Button color="primary" onClick={this.handleSubmit}>Submit</Button>
-            <Button color="error" onClick={this.handleClose}>Cancel</Button>
+            <Button color="error" onClick={this.handleDialogClose}>Cancel</Button>
           </DialogActions>
         </Dialog>
-        <Dashboard tasks={this.state.tasks} />
-        <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <p>
-              Edit <code>src/App.js</code> and save to reload.
-            </p>
-            <a
-              className="App-link"
-              href="https://reactjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn React
-            </a>
-          </header>
-        </div>
+        <Dashboard tasks={this.state.tasks} alertCallback={this.alertCallback} />
       </Container >
     );
   }
