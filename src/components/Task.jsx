@@ -13,7 +13,8 @@ class Task extends React.Component {
                 description: '',
                 date: this.parseDate(today),
                 isChecked: false
-            }
+            },
+            date: today
         };
     };
 
@@ -35,12 +36,15 @@ class Task extends React.Component {
         }), () => this.props.taskCallback(this.state.task));
     };
 
-    handleTimeChange = value => {
+    handleDateChange = value => {
         let date = new Date(value);
-        date = this.parseDate(date)
-        this.setState(() => ({
-            datetime: date
-        }));
+        this.setState(prevState => ({
+            task: {
+                ...prevState.task,
+                date: this.parseDate(date)
+            },
+            date: date
+        }), () => this.props.taskCallback(this.state.task));
     };
 
     parseDate = date => {
@@ -73,8 +77,8 @@ class Task extends React.Component {
                     <DesktopDatePicker
                         label="Due Date"
                         inputFormat="dd/MM/yyyy"
-                        value={this.state.datetime}
-                        onChange={this.handleTimeChange}
+                        value={this.state.date}
+                        onChange={this.handleDateChange}
                         renderInput={(params) => <TextField {...params} sx={{ pr: 1, width: 200 }} />}
                     />
                 </LocalizationProvider>
