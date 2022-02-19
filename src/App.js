@@ -70,7 +70,6 @@ class App extends React.Component {
   };
 
   handleAlertOpen = () => {
-    console.log(this.state.alert)
     this.setState(prevState => ({
       alert: {
         ...prevState.alert,

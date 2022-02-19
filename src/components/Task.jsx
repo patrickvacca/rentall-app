@@ -38,10 +38,9 @@ class Task extends React.Component {
     handleTimeChange = value => {
         let date = new Date(value);
         date = this.parseDate(date)
-        console.log(date);
         this.setState(() => ({
             datetime: date
-        }), () => console.log(this.state));
+        }));
     };
 
     parseDate = date => {
