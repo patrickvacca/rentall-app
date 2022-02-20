@@ -129,9 +129,6 @@ class App extends React.Component {
         }
         const updatedTasks = [...this.state.tasks];
         updatedTasks[editIndex] = this.state.task;
-        console.log(updatedTasks)
-        console.log(editIndex)
-        console.log(this.state.task)
         this.setState(prevState => ({
           tasks: [...updatedTasks],
           alert: {
