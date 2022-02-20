@@ -6,6 +6,7 @@ import {
     ListItemIcon, ListItemText
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -13,19 +14,57 @@ class Dashboard extends React.Component {
         this.state = {
             tasks: [],
             isDelete: false,
-            deleteIndexID: 0
+            deleteIndexID: 0,
+            edit: {
+                isEdit: false,
+                editIndexID: 0,
+                taskText: '',
+            }
         }
     };
 
     handleCheck = id => {
+        let updatedTask = {};
         this.setState({
             tasks: this.props.tasks.map(task => {
                 if (task.id === id) {
                     task.isChecked = !task.isChecked;
+                    updatedTask = task
                 }
                 return task;
             })
         });
+        let url = `${process.env.REACT_APP_BASE_URL}/task/${id}/`;
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        const payload = {
+            isChecked: updatedTask['isChecked']
+        };
+
+        return fetch(url, {
+            method: 'PATCH',
+            accept: 'application/json',
+            headers: headers,
+            body: JSON.stringify(payload)
+        }).then(response => {
+            let alert = {}
+            if (response.status === 200) {
+                alert = {
+                    open: true,
+                    severity: 'success',
+                    message: 'Task successfully updated!'
+                }
+                this.handleClose();
+            } else {
+                alert = {
+                    open: true,
+                    severity: 'error',
+                    message: 'Oops! Error updating the task...'
+                }
+            }
+            this.props.alertCallback(alert);
+        });
+
     };
 
     handleClose = () => {
@@ -39,6 +78,16 @@ class Dashboard extends React.Component {
             deleteIndexID: id,
             isDelete: true
         });
+    };
+    handleEdit = task => {
+        const updatedEdit = {
+            editIndexID: task.id,
+            isEdit: true,
+            taskText: `${task.title} - ${task.description} | ${task.date}`
+        }
+        this.setState({
+            edit: updatedEdit
+        }, () => this.props.editCallback(this.state.edit));
     };
 
     handleDelete = () => {
@@ -94,6 +143,7 @@ class Dashboard extends React.Component {
                     <ListItemButton>
                         <ListItemIcon>
                             <Checkbox
+                                checked={task.isChecked}
                                 edge="start"
                                 tabIndex={-1}
                                 disableRipple
@@ -103,6 +153,11 @@ class Dashboard extends React.Component {
                         <ListItemText style={{ textDecoration: task.isChecked ? 'line-through' : 'none' }} >
                             {task.title} - {task.description} | {task.date}
                         </ListItemText>
+                    </ListItemButton>
+                    <ListItemButton onClick={() => this.handleEdit(task)} sx={{ px: 0 }}>
+                        <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>
+                            <EditIcon color="grey" />
+                        </ListItemIcon>
                     </ListItemButton>
                     <ListItemButton onClick={() => this.handleDeleteIndexID(task.id)} sx={{ px: 0 }}>
                         <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>

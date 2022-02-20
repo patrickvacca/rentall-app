@@ -14,6 +14,7 @@ class TaskBar extends React.Component {
                 <AppBar position="static">
                     <Toolbar>
                         <IconButton
+                            id='taskbar-dashboard-button'
                             size="large"
                             edge="start"
                             color="inherit"
@@ -25,6 +26,7 @@ class TaskBar extends React.Component {
                             Dashboard
                         </Typography>
                         <IconButton
+                            id='taskbar-add-button'
                             size="large"
                             edge="end"
                             color="inherit"
