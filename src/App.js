@@ -126,6 +126,7 @@ class App extends React.Component {
       <Container disableGutters={true} maxWidth='xl' sx={{ height: '100vh', backgroundColor: '#282C34' }}>
         <TaskBar openDialog={this.openDialog} dialogCallback={this.dialogCallback} />
         <Snackbar
+          id='app-snackbar'
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={this.state.alert.open}
           autoHideDuration={6000}
