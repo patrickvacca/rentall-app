@@ -16,6 +16,6 @@ describe('Create a Task', () => {
         cy.get('#task-description').type('TestDescription')
         cy.get('.MuiButton-root').eq(0).click()
         cy.get('#app-snackbar').contains('Task successfully created!')
-        cy.contains('TestTitle - TestDescription | 2022-02-19')
+        cy.contains('TestTitle - TestDescription | 2022-02-20')
     })
 });

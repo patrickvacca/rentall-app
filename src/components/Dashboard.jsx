@@ -6,6 +6,7 @@ import {
     ListItemIcon, ListItemText
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -13,7 +14,12 @@ class Dashboard extends React.Component {
         this.state = {
             tasks: [],
             isDelete: false,
-            deleteIndexID: 0
+            deleteIndexID: 0,
+            edit: {
+                isEdit: false,
+                editIndexID: 0,
+                taskText: '',
+            }
         }
     };
 
@@ -72,6 +78,16 @@ class Dashboard extends React.Component {
             deleteIndexID: id,
             isDelete: true
         });
+    };
+    handleEdit = task => {
+        const updatedEdit = {
+            editIndexID: task.id,
+            isEdit: true,
+            taskText: `${task.title} - ${task.description} | ${task.date}`
+        }
+        this.setState({
+            edit: updatedEdit
+        }, () => this.props.editCallback(this.state.edit));
     };
 
     handleDelete = () => {
@@ -137,6 +153,11 @@ class Dashboard extends React.Component {
                         <ListItemText style={{ textDecoration: task.isChecked ? 'line-through' : 'none' }} >
                             {task.title} - {task.description} | {task.date}
                         </ListItemText>
+                    </ListItemButton>
+                    <ListItemButton onClick={() => this.handleEdit(task)} sx={{ px: 0 }}>
+                        <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>
+                            <EditIcon color="grey" />
+                        </ListItemIcon>
                     </ListItemButton>
                     <ListItemButton onClick={() => this.handleDeleteIndexID(task.id)} sx={{ px: 0 }}>
                         <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>

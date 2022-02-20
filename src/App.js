@@ -21,6 +21,11 @@ class App extends React.Component {
         description: '',
         date: '',
         isChecked: false
+      },
+      edit: {
+        editIndexID: 0,
+        isEdit: false,
+        taskText: ''
       }
     };
   }
@@ -45,6 +50,13 @@ class App extends React.Component {
   dialogCallback = value => {
     this.setState(() => ({
       openDialog: value
+    }));
+  };
+
+  editCallback = value => {
+    this.setState(prevState => ({
+      edit: value,
+      openDialog: !prevState.openDialog
     }));
   };
 
@@ -80,11 +92,17 @@ class App extends React.Component {
 
   handleSubmit = () => {
     let url = `${process.env.REACT_APP_BASE_URL}/task/`;
+    let method = 'POST';
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
+    if (this.state.edit.isEdit) {
+      method = 'PATCH';
+      url = `${process.env.REACT_APP_BASE_URL}/task/${this.state.edit.editIndexID}/`;
+    }
+
     return fetch(url, {
-      method: 'POST',
+      method: method,
       accept: 'application/json',
       headers: headers,
       body: JSON.stringify(this.state.task)
@@ -101,6 +119,29 @@ class App extends React.Component {
         }));
         this.handleDialogClose();
         responseData = response.json()
+      } else if (response.status === 200) {
+        let editIndex = 0;
+        for (let i = 0; i < this.state.tasks.length; i++) {
+          if (this.state.tasks[i].id === this.state.edit.editIndexID) {
+            editIndex = i;
+            break;
+          }
+        }
+        const updatedTasks = [...this.state.tasks];
+        updatedTasks[editIndex] = this.state.task;
+        console.log(updatedTasks)
+        console.log(editIndex)
+        console.log(this.state.task)
+        this.setState(prevState => ({
+          tasks: [...updatedTasks],
+          alert: {
+            ...prevState.alert,
+            severity: 'success',
+            message: 'Task successfully updated!'
+          }
+        }));
+        this.handleDialogClose();
+        responseData = response.json()
       } else {
         this.setState(prevState => ({
           alert: {
@@ -109,19 +150,32 @@ class App extends React.Component {
             message: 'Oops! Error creating the task...'
           }
         }));
+        this.handleAlertOpen()
+        throw new Error('Fields cannot be empty')
       }
       this.handleAlertOpen()
       return responseData
     })
       .then(json => this.setState({ task: json.task }))
       .then(() => {
-        let updatedTasks = [...this.state.tasks]
-        updatedTasks[updatedTasks.length - 1] = this.state.task
-        this.setState(() => ({ tasks: updatedTasks }))
+        if (!this.state.edit.isEdit) {
+          let updatedTasks = [...this.state.tasks]
+          updatedTasks[updatedTasks.length - 1] = this.state.task
+          this.setState(() => ({ tasks: updatedTasks }))
+        } else {
+          this.setState(prevState => ({
+            ...prevState.edit,
+            isEdit: false
+          }))
+        }
+      })
+      .catch((error) => {
+        console.log(error)
       });
   };
 
   render() {
+    const dialogTitle = this.state.edit.isEdit ? `Edit Task: ${this.state.edit.taskText}` : 'Create a Task';
     return (
       <Container disableGutters={true} maxWidth='xl' sx={{ height: '100vh', backgroundColor: '#282C34' }}>
         <TaskBar openDialog={this.openDialog} dialogCallback={this.dialogCallback} />
@@ -141,7 +195,7 @@ class App extends React.Component {
           open={this.state.openDialog}
           onClose={this.handleDialogClose}
         >
-          <DialogTitle>Create a Task</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogContent>
             <Task taskCallback={this.taskCallback} />
           </DialogContent>
@@ -150,7 +204,7 @@ class App extends React.Component {
             <Button color="error" onClick={this.handleDialogClose}>Cancel</Button>
           </DialogActions>
         </Dialog>
-        <Dashboard tasks={this.state.tasks} alertCallback={this.alertCallback} />
+        <Dashboard tasks={this.state.tasks} alertCallback={this.alertCallback} editCallback={this.editCallback} />
       </Container >
     );
   }
