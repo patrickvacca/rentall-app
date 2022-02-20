@@ -18,14 +18,47 @@ class Dashboard extends React.Component {
     };
 
     handleCheck = id => {
+        let updatedTask = {};
         this.setState({
             tasks: this.props.tasks.map(task => {
                 if (task.id === id) {
                     task.isChecked = !task.isChecked;
+                    updatedTask = task
                 }
                 return task;
             })
         });
+        let url = `${process.env.REACT_APP_BASE_URL}/task/${id}/`;
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        const payload = {
+            isChecked: updatedTask['isChecked']
+        };
+
+        return fetch(url, {
+            method: 'PATCH',
+            accept: 'application/json',
+            headers: headers,
+            body: JSON.stringify(payload)
+        }).then(response => {
+            let alert = {}
+            if (response.status === 200) {
+                alert = {
+                    open: true,
+                    severity: 'success',
+                    message: 'Task successfully updated!'
+                }
+                this.handleClose();
+            } else {
+                alert = {
+                    open: true,
+                    severity: 'error',
+                    message: 'Oops! Error updating the task...'
+                }
+            }
+            this.props.alertCallback(alert);
+        });
+
     };
 
     handleClose = () => {
@@ -94,6 +127,7 @@ class Dashboard extends React.Component {
                     <ListItemButton>
                         <ListItemIcon>
                             <Checkbox
+                                checked={task.isChecked}
                                 edge="start"
                                 tabIndex={-1}
                                 disableRipple
