@@ -67,9 +67,13 @@ class App extends React.Component {
   };
 
   handleDialogClose = () => {
-    this.setState({
-      openDialog: false
-    });
+    this.setState(prevState => ({
+      openDialog: false,
+      edit: {
+        ...prevState.edit,
+        isEdit: false
+      }
+    }));
   };
 
   handleAlertClose = () => {
@@ -159,11 +163,6 @@ class App extends React.Component {
           let updatedTasks = [...this.state.tasks]
           updatedTasks[updatedTasks.length - 1] = this.state.task
           this.setState(() => ({ tasks: updatedTasks }))
-        } else {
-          this.setState(prevState => ({
-            ...prevState.edit,
-            isEdit: false
-          }))
         }
       })
       .catch((error) => {
