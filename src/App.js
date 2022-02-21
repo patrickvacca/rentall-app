@@ -237,7 +237,7 @@ class App extends React.Component {
   render() {
     const dialogTitle = this.state.edit.isEdit ? `Edit Task: ${this.state.edit.taskText}` : 'Create a Task';
     return (
-      <Container disableGutters={true} maxWidth='xl' sx={{ height: '100vh', backgroundColor: '#282C34' }}>
+      <Container disableGutters={true} maxWidth='xl' sx={{ backgroundColor: '#282C34' }}>
         <TaskBar openDialog={this.openDialog} dialogCallback={this.dialogCallback} />
         <Snackbar
           id='app-snackbar'
