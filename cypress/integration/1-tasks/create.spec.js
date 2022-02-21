@@ -14,6 +14,8 @@ describe('Create a Task', () => {
         cy.get('#taskbar-add-button').click()
         cy.get('#task-title').type('TestTitle')
         cy.get('#task-description').type('TestDescription')
+        cy.get('.MuiSelect-select').click()
+        cy.get('.MuiList-root > [tabindex="-1"]').click()
         cy.get('.MuiButton-root').eq(0).click()
         cy.get('#app-snackbar').contains('Task successfully created!')
         cy.contains('TestTitle - TestDescription | 2022-02-20')

@@ -81,7 +81,7 @@ class Task extends React.Component {
 
     render() {
         const menuItems = this.state.categoryList.map(category =>
-            <MenuItem key={category.name} value={category.name}>
+            <MenuItem key={category.name ? category.name : 'default'} value={category.name}>
                 {category.name}
             </MenuItem>
         );

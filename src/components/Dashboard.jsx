@@ -140,11 +140,11 @@ class Dashboard extends React.Component {
         const listItems = this.props.tasks.map(task =>
             <Card key={`task-${this.generateKey(task)}`} sx={{ m: 1, p: 1 }}>
                 <ListItem>
-                    <Grid container rowSpacing={0} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                    <Grid container rowSpacing={0} columnSpacing={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
                         <Grid item xs={6}>
                             <Chip label={task.category} />
                         </Grid>
-                        <Grid item xs={0}>
+                        <Grid item xs={8} >
                             <ListItemButton>
                                 <ListItemIcon>
                                     <Checkbox
@@ -160,14 +160,14 @@ class Dashboard extends React.Component {
                                 </ListItemText>
                             </ListItemButton>
                         </Grid>
-                        <Grid sx={{ mt: 1 }}>
+                        <Grid item sx={{ mt: 1 }}>
                             <ListItemButton onClick={() => this.handleEdit(task)} sx={{ px: 0 }}>
                                 <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>
                                     <EditIcon color="grey" />
                                 </ListItemIcon>
                             </ListItemButton>
                         </Grid>
-                        <Grid sx={{ mt: 1 }}>
+                        <Grid item sx={{ mt: 1 }}>
                             <ListItemButton onClick={() => this.handleDeleteIndexID(task.id)} sx={{ px: 0 }}>
                                 <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>
                                     <DeleteIcon color="error" />
