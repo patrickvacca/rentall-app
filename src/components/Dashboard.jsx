@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Button, Card, Checkbox, Dialog,
+    Button, Card, Checkbox, Chip, Dialog,
     DialogActions, DialogTitle, Grid,
     List, ListItem, ListItemButton,
     ListItemIcon, ListItemText
@@ -140,32 +140,43 @@ class Dashboard extends React.Component {
         const listItems = this.props.tasks.map(task =>
             <Card key={`task-${this.generateKey(task)}`} sx={{ m: 1, p: 1 }}>
                 <ListItem>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <Checkbox
-                                checked={task.isChecked}
-                                edge="start"
-                                tabIndex={-1}
-                                disableRipple
-                                onChange={() => this.handleCheck(task.id)}
-                            />
-                        </ListItemIcon>
-                        <ListItemText style={{ textDecoration: task.isChecked ? 'line-through' : 'none' }} >
-                            {task.title} - {task.description} | {task.date}
-                        </ListItemText>
-                    </ListItemButton>
-                    <ListItemButton onClick={() => this.handleEdit(task)} sx={{ px: 0 }}>
-                        <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>
-                            <EditIcon color="grey" />
-                        </ListItemIcon>
-                    </ListItemButton>
-                    <ListItemButton onClick={() => this.handleDeleteIndexID(task.id)} sx={{ px: 0 }}>
-                        <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>
-                            <DeleteIcon color="error" />
-                        </ListItemIcon>
-                    </ListItemButton>
+                    <Grid container rowSpacing={0} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                        <Grid item xs={6}>
+                            <Chip label={task.category} />
+                        </Grid>
+                        <Grid item xs={0}>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    <Checkbox
+                                        checked={task.isChecked}
+                                        edge="start"
+                                        tabIndex={-1}
+                                        disableRipple
+                                        onChange={() => this.handleCheck(task.id)}
+                                    />
+                                </ListItemIcon>
+                                <ListItemText style={{ textDecoration: task.isChecked ? 'line-through' : 'none' }} >
+                                    {task.title} - {task.description} | {task.date}
+                                </ListItemText>
+                            </ListItemButton>
+                        </Grid>
+                        <Grid sx={{ mt: 1 }}>
+                            <ListItemButton onClick={() => this.handleEdit(task)} sx={{ px: 0 }}>
+                                <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>
+                                    <EditIcon color="grey" />
+                                </ListItemIcon>
+                            </ListItemButton>
+                        </Grid>
+                        <Grid sx={{ mt: 1 }}>
+                            <ListItemButton onClick={() => this.handleDeleteIndexID(task.id)} sx={{ px: 0 }}>
+                                <ListItemIcon sx={{ justifyContent: 'center', alignItems: 'end' }}>
+                                    <DeleteIcon color="error" />
+                                </ListItemIcon>
+                            </ListItemButton>
+                        </Grid>
+                    </Grid>
                 </ListItem>
-            </Card>
+            </Card >
         );
 
         return (
