@@ -13,15 +13,7 @@ class TaskBar extends React.Component {
             <Container disableGutters={true} maxWidth='xl'>
                 <AppBar position="static">
                     <Toolbar>
-                        <IconButton
-                            id='taskbar-dashboard-button'
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                        >
-                            <DashboardIcon />
-                        </IconButton>
+                        <DashboardIcon sx={{ pr: 1 }} />
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                             Dashboard
                         </Typography>

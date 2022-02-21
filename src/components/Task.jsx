@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, TextField } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Paper, Select, TextField } from '@mui/material';
 import DateAdapter from '@mui/lab/AdapterDateFns';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/lab';
 
@@ -14,8 +14,21 @@ class Task extends React.Component {
                 date: this.parseDate(today),
                 isChecked: false
             },
-            date: today
+            date: today,
+            categoryList: [''],
+            selectedCategory: ''
         };
+    };
+
+    componentDidMount() {
+        let url = `${process.env.REACT_APP_BASE_URL}/categories/`;
+        let headers = new Headers();
+        return fetch(url, {
+            method: 'GET',
+            accept: 'application/json',
+            headers: headers
+        }).then(response => response.json())
+            .then(json => this.setState({ categoryList: json.categoryList }));
     };
 
     handleTitleChange = e => {
@@ -47,6 +60,17 @@ class Task extends React.Component {
         }), () => this.props.taskCallback(this.state.task));
     };
 
+    handleCategoryChange = event => {
+        const selectedValue = event.target.value;
+        this.setState(prevState => ({
+            task: {
+                ...prevState.task,
+                category: selectedValue
+            },
+            selectedCategory: selectedValue
+        }), () => this.props.taskCallback(this.state.task));
+    };
+
     parseDate = date => {
         const day = new Date(date);
         const dd = String(day.getDate()).padStart(2, '0');
@@ -56,6 +80,11 @@ class Task extends React.Component {
     };
 
     render() {
+        const menuItems = this.state.categoryList.map(category =>
+            <MenuItem key={category.name ? category.name : 'default'} value={category.name}>
+                {category.name}
+            </MenuItem>
+        );
         return (
             <Paper elevation={0} style={{ textAlign: "center" }} sx={{ pt: 1 }}>
                 <TextField
@@ -82,6 +111,12 @@ class Task extends React.Component {
                         renderInput={(params) => <TextField {...params} sx={{ pr: 1, width: 200 }} />}
                     />
                 </LocalizationProvider>
+                <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel>Category</InputLabel>
+                    <Select label='Category' value={this.state.selectedCategory} onChange={this.handleCategoryChange} msx={{ minWidth: 200 }}>
+                        {menuItems}
+                    </Select>
+                </FormControl>
             </Paper>
         );
     }
