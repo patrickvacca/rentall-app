@@ -142,7 +142,7 @@ class Dashboard extends React.Component {
                 <ListItem>
                     <Grid container rowSpacing={0} columnSpacing={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
                         <Grid item xs={6}>
-                            <Chip label={task.category} />
+                            <Chip label={task.category} sx={{ mb: 1 }} />
                         </Grid>
                         <Grid item xs={8} >
                             <ListItemButton>

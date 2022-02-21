@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import { Alert, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar } from '@mui/material';
+import { Alert, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormLabel, FormControlLabel, Radio, RadioGroup, Snackbar, Stack, Switch, Typography } from '@mui/material';
 import Dashboard from './components/Dashboard';
 import Task from './components/Task';
 import TaskBar from './components/TaskBar';
@@ -104,6 +104,7 @@ class App extends React.Component {
       method = 'PATCH';
       url = `${process.env.REACT_APP_BASE_URL}/task/${this.state.edit.editIndexID}/`;
     }
+    let editIndex = 0;
 
     return fetch(url, {
       method: method,
@@ -124,7 +125,7 @@ class App extends React.Component {
         this.handleDialogClose();
         responseData = response.json()
       } else if (response.status === 200) {
-        let editIndex = 0;
+        // let editIndex = 0;
         for (let i = 0; i < this.state.tasks.length; i++) {
           if (this.state.tasks[i].id === this.state.edit.editIndexID) {
             editIndex = i;
@@ -141,7 +142,6 @@ class App extends React.Component {
             message: 'Task successfully updated!'
           }
         }));
-        this.handleDialogClose();
         responseData = response.json()
       } else {
         this.setState(prevState => ({
@@ -163,11 +163,28 @@ class App extends React.Component {
           let updatedTasks = [...this.state.tasks]
           updatedTasks[updatedTasks.length - 1] = this.state.task
           this.setState(() => ({ tasks: updatedTasks }))
+        } else {
+          let updatedTasks = [...this.state.tasks]
+          updatedTasks[editIndex] = this.state.task
+          this.setState(() => ({ tasks: updatedTasks }))
+          this.handleDialogClose();
         }
       })
       .catch((error) => {
         console.log(error)
       });
+  };
+
+  handleSort = event => {
+    const sortType = event.target.value;
+    let headers = new Headers();
+    let url = `${process.env.REACT_APP_BASE_URL}/tasks/${sortType}/`;
+    return fetch(url, {
+      method: 'GET',
+      accept: 'application/json',
+      headers: headers
+    }).then(response => response.json())
+      .then(json => this.setState({ tasks: json.taskList }));
   };
 
   render() {
@@ -200,6 +217,19 @@ class App extends React.Component {
             <Button color="error" onClick={this.handleDialogClose}>Cancel</Button>
           </DialogActions>
         </Dialog>
+        <Box sx={{ bgcolor: 'white', m: 2, p: 1 }}>
+          <FormControl>
+            <FormLabel>Sort by:</FormLabel>
+            <RadioGroup
+              row
+              name="row-radio-buttons-group"
+              onChange={this.handleSort}
+            >
+              <FormControlLabel id="radio-date" value="date" control={<Radio />} label="Date" />
+              <FormControlLabel id="radio-category" value="category" control={<Radio />} label="Category" />
+            </RadioGroup>
+          </FormControl>
+        </Box>
         <Dashboard tasks={this.state.tasks} alertCallback={this.alertCallback} editCallback={this.editCallback} />
       </Container >
     );
