@@ -1,6 +1,11 @@
 import './App.css';
 import React from 'react';
-import { Alert, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormLabel, FormControlLabel, Radio, RadioGroup, Snackbar, Stack, Switch, Typography } from '@mui/material';
+import {
+  Alert, Box, Button, Container, Dialog,
+  DialogActions, DialogContent, DialogTitle,
+  FormControl, FormLabel, FormControlLabel, Grid,
+  Radio, RadioGroup, Snackbar, TextField
+} from '@mui/material';
 import Dashboard from './components/Dashboard';
 import Task from './components/Task';
 import TaskBar from './components/TaskBar';
@@ -10,6 +15,8 @@ class App extends React.Component {
     super();
     this.state = {
       openDialog: false,
+      openCategoryDialog: false,
+      categoryName: '',
       alert: {
         open: false,
         severity: 'error',
@@ -76,6 +83,12 @@ class App extends React.Component {
     }));
   };
 
+  handleCategoryClose = () => {
+    this.setState(prevState => ({
+      openCategoryDialog: false,
+    }));
+  };
+
   handleAlertClose = () => {
     this.setState(prevState => ({
       alert: {
@@ -125,7 +138,6 @@ class App extends React.Component {
         this.handleDialogClose();
         responseData = response.json()
       } else if (response.status === 200) {
-        // let editIndex = 0;
         for (let i = 0; i < this.state.tasks.length; i++) {
           if (this.state.tasks[i].id === this.state.edit.editIndexID) {
             editIndex = i;
@@ -187,6 +199,41 @@ class App extends React.Component {
       .then(json => this.setState({ tasks: json.taskList }));
   };
 
+  handleCategorySubmit = () => {
+    let headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    let url = `${process.env.REACT_APP_BASE_URL}/category/`;
+    const payload = { name: this.state.categoryName }
+    return fetch(url, {
+      method: 'POST',
+      accept: 'application/json',
+      headers: headers,
+      body: JSON.stringify(payload)
+    }).then(response => {
+      if (response.status === 201) {
+        this.setState(prevState => ({
+          alert: {
+            ...prevState.alert,
+            severity: 'success',
+            message: 'Category successfully created!'
+          }
+        }));
+        this.handleCategoryClose();
+      } else {
+        this.setState(prevState => ({
+          alert: {
+            ...prevState.alert,
+            severity: 'error',
+            message: 'Oops! Error creating the category...'
+          }
+        }));
+        this.handleAlertOpen()
+        throw new Error('Fields cannot be empty')
+      }
+      this.handleAlertOpen()
+    });
+  };
+
   render() {
     const dialogTitle = this.state.edit.isEdit ? `Edit Task: ${this.state.edit.taskText}` : 'Create a Task';
     return (
@@ -230,6 +277,30 @@ class App extends React.Component {
             </RadioGroup>
           </FormControl>
         </Box>
+        <Grid container justifyContent='flex-end'>
+          <Button variant='contained' sx={{ m: 2, p: 2 }} onClick={() => this.setState({ openCategoryDialog: true })}>
+            Create a category
+          </Button>
+        </Grid>
+        <Dialog
+          open={this.state.openCategoryDialog}
+          onClose={this.handleCategoryClose}
+        >
+          <DialogTitle>Create a category</DialogTitle>
+          <DialogContent>
+            <TextField
+              id="category-title"
+              label="Category"
+              variant="outlined"
+              sx={{ mt: 2, width: 200 }}
+              onChange={event => this.setState({ categoryName: event.target.value })}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button color="primary" onClick={this.handleCategorySubmit}>Submit</Button>
+            <Button color="error" onClick={this.handleCategoryClose}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
         <Dashboard tasks={this.state.tasks} alertCallback={this.alertCallback} editCallback={this.editCallback} />
       </Container >
     );
